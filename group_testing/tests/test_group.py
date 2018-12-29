@@ -12,7 +12,7 @@ class TestGroup(TransactionCase):
     def setUp(self):
         super(TestGroup, self).setUp()
 
-    def check_group(self, i, u):
+    def check_group(self, i, u, hier=False):
         _logger.info('Start for %s groups and %s users' % (i, u))
         start_date = datetime.now()
         group = self.env['res.groups'].create({
@@ -31,7 +31,8 @@ class TestGroup(TransactionCase):
             group_2 = self.env['res.groups'].create({
                 'name': 'Group %s' % j
             })
-            group_1.write({'implied_ids': [(4, group_2.id)],})
+            gr = group if hier else group_1
+            gr.write({'implied_ids': [(4, group_2.id)],})
             self.assertIn(group_2, group.trans_implied_ids)
             for us in user:
                 self.assertIn(group_2, us.groups_id)
@@ -41,13 +42,13 @@ class TestGroup(TransactionCase):
         ).total_seconds())
 
     def test_10(self):
-        self.check_group(10,1)
+        self.check_group(10, 1)
 
     def test_20(self):
-        self.check_group(20,1)
+        self.check_group(20, 1)
 
     def test_30(self):
-        self.check_group(30,1)
+        self.check_group(30, 1)
 
     def test_10_10(self):
         self.check_group(10, 10)
@@ -57,3 +58,21 @@ class TestGroup(TransactionCase):
 
     def test_30_10(self):
         self.check_group(30, 10)
+
+    def test_10_h(self):
+        self.check_group(10, 1, True)
+
+    def test_20_h(self):
+        self.check_group(20, 1, True)
+
+    def test_30_h(self):
+        self.check_group(30, 1, True)
+
+    def test_10_10_h(self):
+        self.check_group(10, 10, True)
+
+    def test_20_10_h(self):
+        self.check_group(20, 10, True)
+
+    def test_30_10_h(self):
+        self.check_group(30, 10, True)
