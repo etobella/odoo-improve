@@ -32,8 +32,9 @@ class TestGroup(TransactionCase):
                 'name': 'Group %s' % j
             })
             gr = group if hier else group_1
-            gr.write({'implied_ids': [(4, group_2.id)],})
-            self.assertIn(group_2, group.trans_implied_ids)
+            # We are trying to simulate how it works on real life
+            gr[0].write({'implied_ids': [(4, group_2.id)],})
+            self.assertIn(group_2, group[0].trans_implied_ids)
             for us in user:
                 self.assertIn(group_2, us.groups_id)
             group_1 = group_2
